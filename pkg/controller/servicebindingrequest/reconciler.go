@@ -95,6 +95,7 @@ func (r *Reconciler) appendVolumes(volumeList []corev1.Volume, data map[string][
 // 	  to load intermediary secret;
 func (r *Reconciler) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	ctx := context.TODO()
+
 	logger := logf.Log.WithValues("Request.Namespace", request.Namespace, "Request.Name", request.Name)
 	logger.Info("Reconciling ServiceBindingRequest")
 
@@ -134,7 +135,8 @@ func (r *Reconciler) Reconcile(request reconcile.Request) (reconcile.Result, err
 		return RequeueOnNotFound(err)
 	}
 
-	retriever := NewRetriever(ctx, r.client, plan, instance.Spec.EnvVarPrefix)
+	//retriever := NewRetriever(ctx, r.client, plan, instance.Spec.EnvVarPrefix)
+	retriever := NewRetrieverWithDynamicClient(ctx, r.dynClient, plan, instance.Spec.EnvVarPrefix)
 	if err = retriever.Retrieve(); err != nil {
 		// Update Status
 		r.setBindingInProgressStatus(instance)
